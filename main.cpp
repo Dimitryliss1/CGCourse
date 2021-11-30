@@ -104,14 +104,12 @@ int main() {
 }
 
 void fill(int x, int y, int color, int xScr1, int xScr2, int yScr1, int yScr2){
-    struct toW{
-        toW(int i, int i1): x(i), y(i1) {};
-        toW() = default;
+    struct Point{
+        Point(int i, int i1): x(i), y(i1) {};
+        Point() = default;
         int x, y;
-    }init;
-    init.x = x;
-    init.y = y;
-    vector <toW> stack;
+    }init(x, y);
+    vector <Point> stack;
     stack.emplace_back(init);
     while(!stack.empty()) {
         int curx = stack[stack.size() - 1].x;
@@ -166,10 +164,10 @@ void draw(std::vector<Figure>& figures, int x1, int y1, int x2, int y2){
         int yStart = win.y1;
         int xEnd = win.x2;
         int yEnd = win.y2;
-//        line(xStart, yStart, xEnd - 1, yStart);
-//        line(xEnd - 1, yStart, xEnd - 1, yEnd - 1);
-//        line(xEnd - 1, yEnd - 1, xStart, yEnd - 1);
-//        line(xStart, yEnd - 1, xStart, yStart);
+//        line(xStart, yStart, xEnd, yStart);
+//        line(xEnd, yStart, xEnd, yEnd);
+//        line(xEnd, yEnd, xStart, yEnd);
+//        line(xStart, yEnd, xStart, yStart);
         vector<Polygon> in;
         vector<Polygon> out;
         vector<Polygon> intersect;
