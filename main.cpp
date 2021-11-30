@@ -8,11 +8,6 @@
 
 using namespace std;
 
-struct Point{
-    int x, y;
-    Point(int a, int b): x(a), y(b) {};
-};
-
 std::vector<Figure> init();
 void fill(int x, int y, int color, int xScr1 = 0, int xScr2 = getmaxx(), int yScr1 = 0, int yScr2 = getmaxy());
 void draw(std::vector<Figure>& figures, int x1, int y1, int x2, int y2);
@@ -21,7 +16,7 @@ int main() {
     initwindow(600, 600);
     sdlbgiauto();
     std::vector<Figure> figs = init();
-    draw(figs, 0, 0, getmaxx() + 1, getmaxy() + 1);
+//    draw(figs, 0, 0, getmaxx() + 1, getmaxy() + 1);
     int curFig = 0;
     Matrix rotPoint = figs[curFig].getMidPoint();
     while(true) {
@@ -151,17 +146,17 @@ void draw(std::vector<Figure>& figures, int x1, int y1, int x2, int y2){
         }
     }
     sort(unsorted.begin(), unsorted.end(), comp);
-    Matrix LightSource(0, 0, 0);
-    for (auto& figure: figures){
-        for (int j = 0; j < figure.getPolys()->size(); j++) {
-            unsorted.emplace_back(unsorted[j].getShadow(LightSource, getmaxy()));
-            unsorted[unsorted.size() - 1].convertToScreenCoords();
-            unsorted[unsorted.size() - 1].getEqn();
-            for (auto& k: *unsorted[unsorted.size() - 1].getPoints()){
-                std::cout << k.getByRowCol(0, 0) << ' ' << k.getByRowCol(0, 1) << ' ' << k.getByRowCol(0, 2) << '\n';
-            }
-        }
-    }
+//    Matrix LightSource(0, 0, 0);
+//    for (auto& figure: figures){
+//        for (int j = 0; j < figure.getPolys()->size(); j++) {
+//            unsorted.emplace_back(unsorted[j].getShadow(LightSource, getmaxy()));
+//            unsorted[unsorted.size() - 1].convertToScreenCoords();
+//            unsorted[unsorted.size() - 1].getEqn();
+//            for (auto& k: *unsorted[unsorted.size() - 1].getPoints()){
+//                std::cout << k.getByRowCol(0, 0) << ' ' << k.getByRowCol(0, 1) << ' ' << k.getByRowCol(0, 2) << '\n';
+//            }
+//        }
+//    }
     int cnt = 0;
     while (!stack.empty()) {
         Window win = stack[stack.size() - 1];
@@ -171,7 +166,10 @@ void draw(std::vector<Figure>& figures, int x1, int y1, int x2, int y2){
         int yStart = win.y1;
         int xEnd = win.x2;
         int yEnd = win.y2;
-
+//        line(xStart, yStart, xEnd - 1, yStart);
+//        line(xEnd - 1, yStart, xEnd - 1, yEnd - 1);
+//        line(xEnd - 1, yEnd - 1, xStart, yEnd - 1);
+//        line(xStart, yEnd - 1, xStart, yStart);
         vector<Polygon> in;
         vector<Polygon> out;
         vector<Polygon> intersect;
