@@ -119,11 +119,7 @@ int main() {
 }
 
 void fill(int x, int y, int color, int xScr1, int xScr2, int yScr1, int yScr2){
-    struct Point{
-        Point(int i, int i1): x(i), y(i1) {};
-        Point() = default;
-        int x, y;
-    }init(x, y);
+    Point init(x, y);
     vector <Point> stack;
     stack.emplace_back(init);
     while(!stack.empty()) {
@@ -143,7 +139,15 @@ void fill(int x, int y, int color, int xScr1, int xScr2, int yScr1, int yScr2){
 }
 
 bool comp(Polygon& a, Polygon& b){
-    return a.getMidZ() < b.getMidZ();
+    return a.getMidZofClosestLine() < b.getMidZofClosestLine();
+}
+
+bool compForWindow(pair<Polygon, Point>& a, pair<Polygon, Point>& b){
+    int x = a.second.x;
+    int y = a.second.y;
+    if (b.first.isShadow1()) return true;
+    if (a.first.isShadow1()) return false;
+    return a.first.getZat(x, y) < b.first.getZat(x, y);
 }
 
 void draw(std::vector<Figure>& figures, int x1, int y1, int x2, int y2){
@@ -248,7 +252,6 @@ void draw(std::vector<Figure>& figures, int x1, int y1, int x2, int y2){
         }
 
         if (!overlap.empty()) {
-            bool flag = false;
             float zAt1 = overlap[0].getZat(xStart, yStart);
             float zAt2 = overlap[0].getZat(xEnd - 1, yStart);
             float zAt3 = overlap[0].getZat(xEnd - 1, yEnd - 1);
@@ -259,9 +262,8 @@ void draw(std::vector<Figure>& figures, int x1, int y1, int x2, int y2){
             int color3 = overlap[0].getColor();
             int color4 = overlap[0].getColor();
             for (auto& poly:overlap) {
-
+                if (poly.isShadow1()) continue;
                 if (zAt1 > poly.getZat(xStart, yStart)) {
-                    flag = true;
                     zAt1 = poly.getZat(xStart, yStart);
                     color1 = poly.getColor();
 //                    break;
@@ -269,20 +271,17 @@ void draw(std::vector<Figure>& figures, int x1, int y1, int x2, int y2){
                 if (zAt2 > poly.getZat(xEnd - 1, yStart)) {
                     color2 = poly.getColor();
                     zAt2 = poly.getZat(xEnd - 1, yStart);
-                    flag = true;
-//                    break;
+                    //                    break;
                 }
                 if (zAt3 > poly.getZat(xEnd - 1, yEnd - 1)) {
                     color3 = poly.getColor();
                     zAt3 = poly.getZat(xEnd - 1, yEnd - 1);
-                    flag = true;
-//                    break;
+                    //                    break;
                 }
                 if (zAt4 > poly.getZat(xStart, yEnd - 1)) {
                     color4 = poly.getColor();
                     zAt4 = poly.getZat(xStart, yEnd - 1);
-                    flag = true;
-//                    break;
+                    //                    break;
                 }
             }
             set<int>colors = {color1, color2, color3, color4};
@@ -298,7 +297,7 @@ void draw(std::vector<Figure>& figures, int x1, int y1, int x2, int y2){
                 }
                 continue;
             }
-            fill((xStart + xEnd) / 2, (yStart + yEnd) / 2, color, xStart, xEnd - 1, yStart, yEnd - 1);
+            fill((xStart + xEnd) / 2, (yStart + yEnd) / 2, color1, xStart, xEnd - 1, yStart, yEnd - 1);
             cnt++;
         }
     }
