@@ -161,25 +161,25 @@ void Polygon::assign(Polygon &from) {
 Polygon::Polygon(Matrix &pt1, Matrix &pt2, Matrix &pt3, bool isSh, int c) {
     color = c;
     isShadow = isSh;
-    points.emplace_back(Matrix(pt1));
-    points.emplace_back(Matrix(pt2));
-    points.emplace_back(Matrix(pt3));
+    points.emplace_back(pt1);
+    points.emplace_back(pt2);
+    points.emplace_back(pt3);
 }
 
 Polygon::Polygon(Matrix &pt1, Matrix &pt2, Matrix &pt3, Matrix &pt4, bool isSh, int c) {
     color = c;
     isShadow = isSh;
-    points.emplace_back(Matrix(pt1));
-    points.emplace_back(Matrix(pt2));
-    points.emplace_back(Matrix(pt3));
-    points.emplace_back(Matrix(pt4));
+    points.emplace_back(pt1);
+    points.emplace_back(pt2);
+    points.emplace_back(pt3);
+    points.emplace_back(pt4);
 }
 
 Polygon::Polygon(Polygon const &from) {
     isShadow = from.isShadow;
     color = from.color;
     for(const auto & point : from.points){
-        points.emplace_back(Matrix(point));
+        points.emplace_back(point);
     }
     equation = this->getEqn();
 }

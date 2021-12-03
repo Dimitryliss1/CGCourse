@@ -101,6 +101,18 @@ int main() {
                     curFig += 1;
                     curFig %= figs.size();
                     break;
+                case 'z': {
+                    figs[curFig].scale(0.95, rotPoint);
+                    setbkcolor(0);
+                    draw(figs, 0, 0, getmaxx() + 1, getmaxy() + 1);
+                    break;
+                }
+                case 'c': {
+                    figs[curFig].scale(1.05, rotPoint);
+                    setbkcolor(0);
+                    draw(figs, 0, 0, getmaxx() + 1, getmaxy() + 1);
+                    break;
+                }
             }
         }
     }
@@ -142,7 +154,7 @@ void draw(std::vector<Figure>& figures, int x1, int y1, int x2, int y2){
     Matrix lSource(1000, -1000, 0);
     for (auto &figure : figures) {
         for (int j = 0; j < figure.getPolys()->size(); j++) {
-            unsorted.emplace_back(Polygon(figure.getPolys()[0][j].getShadow(lSource, getmaxy() + 1)));
+            unsorted.emplace_back(figure.getPolys()[0][j].getShadow(lSource, getmaxy() + 1));
             unsorted[unsorted.size() - 1].convertToScreenCoords();
             unsorted[unsorted.size() - 1].getEqn();
             if (unsorted[unsorted.size() - 1].ccw()) unsorted.pop_back();
@@ -150,7 +162,7 @@ void draw(std::vector<Figure>& figures, int x1, int y1, int x2, int y2){
     }
     for (auto &figure : figures) {
         for (int j = 0; j < figure.getPolys()->size(); j++) {
-            unsorted.emplace_back(Polygon(figure.getPolys()[0][j]));
+            unsorted.emplace_back(figure.getPolys()[0][j]);
             unsorted[unsorted.size() - 1].convertToScreenCoords();
             unsorted[unsorted.size() - 1].getEqn();
             if (unsorted[unsorted.size() - 1].ccw()) unsorted.pop_back();
@@ -166,10 +178,12 @@ void draw(std::vector<Figure>& figures, int x1, int y1, int x2, int y2){
         int yStart = win.y1;
         int xEnd = win.x2;
         int yEnd = win.y2;
+//        setcolor(1);
 //        line(xStart, yStart, xEnd, yStart);
 //        line(xEnd, yStart, xEnd, yEnd);
 //        line(xEnd, yEnd, xStart, yEnd);
 //        line(xStart, yEnd, xStart, yStart);
+//        setcolor(15);
         vector<Polygon> in;
         vector<Polygon> out;
         vector<Polygon> intersect;
@@ -180,9 +194,9 @@ void draw(std::vector<Figure>& figures, int x1, int y1, int x2, int y2){
         for (auto &poly: unsorted) {
             int tmp = poly.getAmtOfPointsInsidePoly(xs, ys);
             if (tmp == 4) {
-                overlap.emplace_back(Polygon(poly));
+                overlap.emplace_back(poly);
             } else if (tmp < 4 && tmp > 0) {
-                intersect.emplace_back(Polygon(poly));
+                intersect.emplace_back(poly);
             } else {
                 int ptsInWin = 0;
                 vector<Matrix> pts = poly.getPoints()[0];
@@ -194,11 +208,11 @@ void draw(std::vector<Figure>& figures, int x1, int y1, int x2, int y2){
                     }
                 }
                 if (ptsInWin == 0) {
-                    out.emplace_back(Polygon(poly));
+                    out.emplace_back(poly);
                 } else if (ptsInWin == pts.size()) {
-                    in.emplace_back(Polygon(poly));
+                    in.emplace_back(poly);
                 } else {
-                    intersect.emplace_back(Polygon(poly));
+                    intersect.emplace_back(poly);
                 }
             }
         }
@@ -234,10 +248,6 @@ void draw(std::vector<Figure>& figures, int x1, int y1, int x2, int y2){
         }
 
         if (!overlap.empty()) {
-            vector <pair<Polygon, Window>> tmp;
-            for (auto& poly: overlap){
-                tmp.emplace_back(poly, win);
-            }
             bool flag = false;
             float zAt1 = overlap[0].getZat(xStart, yStart);
             float zAt2 = overlap[0].getZat(xEnd - 1, yStart);
@@ -304,14 +314,14 @@ std::vector<Figure> init(){
     res.emplace_back(Figure(pts, 1));
     pts.clear();
 
-    pts.emplace_back(Matrix(100, 400, 100));
-    pts.emplace_back(Matrix(200, 400, 100));
-    pts.emplace_back(Matrix(100, 400, 300));
-    pts.emplace_back(Matrix(200, 400, 300));
-    pts.emplace_back(Matrix(100, 200, 100));
-    pts.emplace_back(Matrix(200, 200, 100));
-    pts.emplace_back(Matrix(100, 200, 300));
-    pts.emplace_back(Matrix(200, 200, 300));
+    pts.emplace_back(Matrix(50, 400, 100));
+    pts.emplace_back(Matrix(150, 400, 100));
+    pts.emplace_back(Matrix(50, 400, 300));
+    pts.emplace_back(Matrix(150, 400, 300));
+    pts.emplace_back(Matrix(50, 200, 100));
+    pts.emplace_back(Matrix(150, 200, 100));
+    pts.emplace_back(Matrix(50, 200, 300));
+    pts.emplace_back(Matrix(150, 200, 300));
 
     res.emplace_back(Figure(pts, 2));
     return res;
