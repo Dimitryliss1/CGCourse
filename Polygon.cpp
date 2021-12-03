@@ -48,7 +48,7 @@ float Polygon::getZat(float x, float y) {
     return (x*eqn.getByRowCol(0,0) + y*eqn.getByRowCol(0,1) + eqn.getByRowCol(0,3))/*/(-equation.getByRowCol(0,2))*/;
 }
 
-float Polygon::getMidZ() {
+float Polygon::getMidZofClosestLine() {
     if (isShadow){
         return 1000000000.0;
     }
@@ -151,13 +151,6 @@ void Polygon::convertToScreenCoords() {
     getEqn();
 }
 
-void Polygon::assign(Polygon &from) {
-    points.clear();
-    for(auto & point : *from.getPoints()){
-        points.emplace_back(point);
-    }
-}
-
 Polygon::Polygon(Matrix &pt1, Matrix &pt2, Matrix &pt3, bool isSh, int c) {
     color = c;
     isShadow = isSh;
@@ -240,4 +233,16 @@ bool Polygon::ccw() {
 
     float signed_area = a*d - b*c;
     return signed_area < 0;
+}
+
+bool Polygon::isShadow1() const {
+    return isShadow;
+}
+
+float Polygon::getMidZ() {
+    float res = 0;
+    for (auto& i: points){
+        res += i.getByRowCol(0, 2);
+    }
+    return res;
 }
