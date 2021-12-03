@@ -5,6 +5,8 @@
 #include "window.h"
 #include <graphics.h>
 #include <algorithm>
+#include <set>
+#define MINWIN 1
 
 using namespace std;
 
@@ -13,9 +15,10 @@ void fill(int x, int y, int color, int xScr1 = 0, int xScr2 = getmaxx(), int ySc
 void draw(std::vector<Figure>& figures, int x1, int y1, int x2, int y2);
 
 int main() {
-    initwindow(600, 600);
+    initwindow(512, 512);
     sdlbgiauto();
     std::vector<Figure> figs = init();
+//    draw(shads, 0,0, getmaxx() + 1, getmaxy() + 1);
 //    draw(figs, 0, 0, getmaxx() + 1, getmaxy() + 1);
     int curFig = 0;
     Matrix rotPoint = figs[curFig].getMidPoint();
@@ -58,38 +61,38 @@ int main() {
                     draw(figs, 0, 0, getmaxx() + 1, getmaxy() + 1);
                     break;
                 case 'r': {
-                    figs[curFig].rotate(10, rotPoint, 'x');
+                    figs[curFig].rotate(30, rotPoint, 'x');
                     setbkcolor(0);
                     draw(figs, 0, 0, getmaxx() + 1, getmaxy() + 1);
                     break;
                 }
                 case 't': {
-                    figs[curFig].rotate(-10, rotPoint, 'x');
+                    figs[curFig].rotate(-30, rotPoint, 'x');
                     setbkcolor(0);
                     draw(figs, 0, 0, getmaxx() + 1, getmaxy() + 1);
                     break;
                 }
                 case 'f': {
-                    figs[curFig].rotate(10, rotPoint, 'y');
+                    figs[curFig].rotate(30, rotPoint, 'y');
                     setbkcolor(0);
                     draw(figs, 0, 0, getmaxx() + 1, getmaxy() + 1);
                     break;
                 }
                 case 'g': {
-                    figs[curFig].rotate(-10, rotPoint, 'y');
-                    setbkcolor(0);
-                    draw(figs, 0, 0, getmaxx() + 1, getmaxy() + 1);
-                    break;
-                }
-                case 'c': {
-                    figs[curFig].rotate(10, rotPoint, 'z');
+                    figs[curFig].rotate(-30, rotPoint, 'y');
                     setbkcolor(0);
                     draw(figs, 0, 0, getmaxx() + 1, getmaxy() + 1);
                     break;
                 }
                 case 'v': {
+                    figs[curFig].rotate(30, rotPoint, 'z');
+                    setbkcolor(0);
+                    draw(figs, 0, 0, getmaxx() + 1, getmaxy() + 1);
+                    break;
+                }
+                case 'b': {
 
-                    figs[curFig].rotate(-10, rotPoint, 'z');
+                    figs[curFig].rotate(-30, rotPoint, 'z');
                     setbkcolor(0);
                     draw(figs, 0, 0, getmaxx() + 1, getmaxy() + 1);
                     break;
@@ -115,7 +118,7 @@ void fill(int x, int y, int color, int xScr1, int xScr2, int yScr1, int yScr2){
         int curx = stack[stack.size() - 1].x;
         int curY = stack[stack.size() - 1].y;
         stack.pop_back();
-        if (getpixel(curx, curY) != 0) {
+        if (getpixel(curx, curY) == color) {
             continue;
         } else {
             putpixel(curx, curY, color);
@@ -136,25 +139,24 @@ void draw(std::vector<Figure>& figures, int x1, int y1, int x2, int y2){
     Window fst(x1, y1, x2, y2);
     stack.push_back(fst);
     vector<Polygon> unsorted;
+    Matrix lSource(1000, -1000, 0);
+    for (auto &figure : figures) {
+        for (int j = 0; j < figure.getPolys()->size(); j++) {
+            unsorted.emplace_back(Polygon(figure.getPolys()[0][j].getShadow(lSource, getmaxy() + 1)));
+            unsorted[unsorted.size() - 1].convertToScreenCoords();
+            unsorted[unsorted.size() - 1].getEqn();
+            if (unsorted[unsorted.size() - 1].ccw()) unsorted.pop_back();
+        }
+    }
     for (auto &figure : figures) {
         for (int j = 0; j < figure.getPolys()->size(); j++) {
             unsorted.emplace_back(Polygon(figure.getPolys()[0][j]));
             unsorted[unsorted.size() - 1].convertToScreenCoords();
             unsorted[unsorted.size() - 1].getEqn();
+            if (unsorted[unsorted.size() - 1].ccw()) unsorted.pop_back();
         }
     }
     sort(unsorted.begin(), unsorted.end(), comp);
-//    Matrix LightSource(0, 0, 0);
-//    for (auto& figure: figures){
-//        for (int j = 0; j < figure.getPolys()->size(); j++) {
-//            unsorted.emplace_back(unsorted[j].getShadow(LightSource, getmaxy()));
-//            unsorted[unsorted.size() - 1].convertToScreenCoords();
-//            unsorted[unsorted.size() - 1].getEqn();
-//            for (auto& k: *unsorted[unsorted.size() - 1].getPoints()){
-//                std::cout << k.getByRowCol(0, 0) << ' ' << k.getByRowCol(0, 1) << ' ' << k.getByRowCol(0, 2) << '\n';
-//            }
-//        }
-//    }
     int cnt = 0;
     while (!stack.empty()) {
         Window win = stack[stack.size() - 1];
@@ -204,17 +206,17 @@ void draw(std::vector<Figure>& figures, int x1, int y1, int x2, int y2){
         if (out.size() == unsorted.size()) {
             continue;
         }
-        if (win.size == 1){
+        if (win.size == MINWIN){
             vector<Polygon>tmp;
             tmp.reserve(overlap.size() + in.size() + intersect.size());
             for(auto& i: overlap){
-                tmp.push_back(i);
+                tmp.emplace_back(i);
             }
             for(auto& i: in){
-                tmp.push_back(i);
+                tmp.emplace_back(i);
             }
             for(auto& i: intersect){
-                tmp.push_back(i);
+                tmp.emplace_back(i);
             }
             sort(tmp.begin(), tmp.end(), comp);
             putpixel(xStart, yStart, tmp[0].getColor());
@@ -222,7 +224,7 @@ void draw(std::vector<Figure>& figures, int x1, int y1, int x2, int y2){
         }
 
         if (!intersect.empty() || !in.empty()) {
-            if (win.size > 1) {
+            if (win.size > MINWIN) {
                 stack.emplace_back(xStart, yStart, (xStart + xEnd) / 2, (yStart + yEnd) / 2);
                 stack.emplace_back((xStart + xEnd) / 2, (yStart + yEnd) / 2, xEnd, yEnd);
                 stack.emplace_back(xStart, (yStart + yEnd) / 2, (xStart + xEnd) / 2, yEnd);
@@ -232,36 +234,53 @@ void draw(std::vector<Figure>& figures, int x1, int y1, int x2, int y2){
         }
 
         if (!overlap.empty()) {
+            vector <pair<Polygon, Window>> tmp;
+            for (auto& poly: overlap){
+                tmp.emplace_back(poly, win);
+            }
             bool flag = false;
             float zAt1 = overlap[0].getZat(xStart, yStart);
             float zAt2 = overlap[0].getZat(xEnd - 1, yStart);
             float zAt3 = overlap[0].getZat(xEnd - 1, yEnd - 1);
             float zAt4 = overlap[0].getZat(xStart, yEnd - 1);
             int color = overlap[0].getColor();
-            for (auto &poly: overlap) {
+            int color1 = overlap[0].getColor();
+            int color2 = overlap[0].getColor();
+            int color3 = overlap[0].getColor();
+            int color4 = overlap[0].getColor();
+            for (auto& poly:overlap) {
 
                 if (zAt1 > poly.getZat(xStart, yStart)) {
                     flag = true;
-                    break;
+                    zAt1 = poly.getZat(xStart, yStart);
+                    color1 = poly.getColor();
+//                    break;
                 }
                 if (zAt2 > poly.getZat(xEnd - 1, yStart)) {
+                    color2 = poly.getColor();
+                    zAt2 = poly.getZat(xEnd - 1, yStart);
                     flag = true;
-                    break;
+//                    break;
                 }
                 if (zAt3 > poly.getZat(xEnd - 1, yEnd - 1)) {
+                    color3 = poly.getColor();
+                    zAt3 = poly.getZat(xEnd - 1, yEnd - 1);
                     flag = true;
-                    break;
+//                    break;
                 }
                 if (zAt4 > poly.getZat(xStart, yEnd - 1)) {
+                    color4 = poly.getColor();
+                    zAt4 = poly.getZat(xStart, yEnd - 1);
                     flag = true;
-                    break;
+//                    break;
                 }
             }
-            if (flag) {
+            set<int>colors = {color1, color2, color3, color4};
+            if (colors.size() > 1) {
                 if (xEnd - xStart <= 1 && yEnd - yStart <= 1) {
                     continue;
                 }
-                if (win.size > 1) {
+                if (win.size > MINWIN) {
                     stack.emplace_back(xStart, yStart, (xStart + xEnd) / 2, (yStart + yEnd) / 2);
                     stack.emplace_back((xStart + xEnd) / 2, (yStart + yEnd) / 2, xEnd, yEnd);
                     stack.emplace_back(xStart, (yStart + yEnd) / 2, (xStart + xEnd) / 2, yEnd);
@@ -279,8 +298,8 @@ std::vector<Figure> init(){
     std::vector<Figure>res;
     std::vector<Matrix>pts;
     pts.emplace_back(Matrix(300, 400, 100));
-    pts.emplace_back(Matrix(500, 400, 100));
     pts.emplace_back(Matrix(400, 400, 300));
+    pts.emplace_back(Matrix(500, 400, 100));
     pts.emplace_back(Matrix(400, 200, 166));
     res.emplace_back(Figure(pts, 1));
     pts.clear();
