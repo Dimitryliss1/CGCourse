@@ -13,5 +13,10 @@ public:
 
 };
 
+struct Point{
+    Point(int i, int i1): x(i), y(i1) {};
+    Point() = default;
+    int x, y;
+};
 
 #endif //CGCOURSE_WINDOW_H
