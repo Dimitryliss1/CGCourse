@@ -25,35 +25,41 @@ Matrix Polygon::getEqn() {
 //    y2 -= z2/2;
 //    x3 += z3/2;
 //    y3 -= z3/2;
-    float eq[4] = {(float) (y2 - y1) * (z3 - z1) - (z2 - z1) * (y3 - y1),
-                   (float) (z2 - z1) * (x3 - x1) - (x2 - x1) * (z3 - z1),
-                   (float) (x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1),
+
+    float eq[4] = {(y1 - y2) * (z1 + z2) + (y2 - y3) * (z2 + z3) + (y3 - y1) * (z3 + z1),
+                   (z1 - z2) * (x1 + x2) + (z2 - z3) * (x2 + x3) + (z2 - z3) * (x2 + x3),
+                   (x1 - x2) * (y1 + y2) + (x2 - x3) * (y2 + y3) + (x3 - x1) * (y3 + y1),
                    0};
+//    float eq[4] = {(float) (y2 - y1) * (z3 - z1) - (z2 - z1) * (y3 - y1),
+//                   (float) (z2 - z1) * (x3 - x1) - (x2 - x1) * (z3 - z1),
+//                   (float) (x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1),
+//                   0};
     float tmp = 0;
-    tmp += (-x1) * ((y2 - y1) * (z3 - z1) - (z2 - z1) * (y3 - y1));
-    tmp += (-y1) * ((z2 - z1) * (x3 - x1) - (x2 - x1) * (z3 - z1));
-    tmp += (-z1) * ((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1));
+    tmp += (-x1) * /*((y2 - y1) * (z3 - z1) - (z2 - z1) * (y3 - y1))*/ eq[0];
+    tmp += (-y1) * /*((z2 - z1) * (x3 - x1) - (x2 - x1) * (z3 - z1))*/ eq[1];
+    tmp += (-z1) * /*((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1))*/ eq[2];
     eq[3] = tmp;
     equation.fill(eq, 4);
     return equation;
 }
 
 float Polygon::getZat(float x, float y) {
-    float z = 0;
-    this->getEqn();
-    z = (-x*equation.getByRowCol(0,0) - y*equation.getByRowCol(0,1) - equation.getByRowCol(0,3))/(equation.getByRowCol(0,2));
-    return z;
+    Matrix eqn = this->getEqn();
+    return (x*eqn.getByRowCol(0,0) + y*eqn.getByRowCol(0,1) + eqn.getByRowCol(0,3))/*/(-equation.getByRowCol(0,2))*/;
 }
 
 float Polygon::getMidZ() {
     if (isShadow){
         return 1000000000.0;
     }
-    float res = 0;
-    for (auto & point : points) {
-        res += point.getByRowCol(0, 2);
-    }
-    return res/3;
+    float res1 = points[0].getByRowCol(0, 2) + points[1].getByRowCol(0, 2);
+    float res2 = points[0].getByRowCol(0, 2) + points[2].getByRowCol(0, 2);
+    float res3 = points[1].getByRowCol(0, 2) + points[2].getByRowCol(0, 2);
+//    float res1 = 0;
+//    for (auto & point : points) {
+//        res1 += point.getByRowCol(0, 2);
+//    }
+    return std::min(std::min(res1/2, res2/2), res3/2);
 }
 
 Matrix Polygon::getCover() {
@@ -67,10 +73,10 @@ Matrix Polygon::getCover() {
             xmax = point.getByRowCol(0,0);
         }
         if (point.getByRowCol(0,1) < ymin) {
-            ymin = point.getByRowCol(0,0);
+            ymin = point.getByRowCol(0,1);
         }
         if (point.getByRowCol(0,1) > ymax){
-            ymax = point.getByRowCol(0,0);
+            ymax = point.getByRowCol(0,1);
         }
     }
     Matrix res (1, 4);
@@ -80,11 +86,24 @@ Matrix Polygon::getCover() {
 }
 
 Polygon Polygon::getShadow(Matrix &LightSource, float maxY) {
-    Polygon res;
-    res.assign(*this);
+    Polygon res(*this);
     Matrix tmp = generateShadowMatrix(LightSource, maxY);
+    float xl = LightSource.getByRowCol(0, 0);
+    float yl = LightSource.getByRowCol(0, 1);
+    float zl = LightSource.getByRowCol(0, 2);
+
     for (auto& i: res.points){
-        i = i * tmp;
+        float x = i.getByRowCol(0, 0);
+        float y = i.getByRowCol(0, 1);
+        float z = i.getByRowCol(0, 2);
+        float f = y- yl;
+        if (f == 0.0f) f = 1;
+        x = (x * (maxY - yl) - xl * (maxY - y)) / f;
+        z = (z * (maxY - yl) - zl * (maxY - y)) / f;
+        y = maxY;
+        float mas[4] = {x, y, z, 1};
+        i.fill(mas, 4);
+//        i = i * tmp;
     }
     res.isShadow = true;
     res.color = 15;
@@ -207,4 +226,18 @@ bool Polygon::operator==(const Polygon &rhs) const {
 
 bool Polygon::operator!=(const Polygon &rhs) const {
     return !(rhs == *this);
+}
+
+bool Polygon::ccw() {
+    float ax = points[0].getByRowCol(0, 0), ay = points[0].getByRowCol(0, 1);
+    float bx = points[2].getByRowCol(0, 0), by = points[2].getByRowCol(0, 1);
+    float cx = points[1].getByRowCol(0, 0), cy = points[1].getByRowCol(0, 1);
+
+    float a = bx - ax;
+    float b = by - ay;
+    float c = cx - ax;
+    float d = cy - ay;
+
+    float signed_area = a*d - b*c;
+    return signed_area < 0;
 }

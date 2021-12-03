@@ -37,10 +37,9 @@ public:
     void assign(Polygon& from);
     void setIsShadow(bool isShadow);
     void setColor(int color);
-
     bool operator==(const Polygon &rhs) const;
-
     bool operator!=(const Polygon &rhs) const;
+    bool ccw();
 };
 
 
