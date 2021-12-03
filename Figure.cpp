@@ -3,22 +3,27 @@
 //
 
 #include "Figure.h"
-#include <graphics.h>
 
 Figure::Figure(std::vector<Matrix> &points, int type)  {
     if (type == 1){
         polys.emplace_back(Polygon(points[0], points[1], points[2], false, 1));
-        polys.emplace_back(Polygon(points[0], points[1], points[3], false, 2));
-        polys.emplace_back(Polygon(points[3], points[1], points[2], false, 3));
-        polys.emplace_back(Polygon(points[0], points[3], points[2], false, 4));
+        polys.emplace_back(Polygon(points[0], points[3], points[1], false, 2));
+        polys.emplace_back(Polygon(points[2], points[1], points[3], false, 3));
+        polys.emplace_back(Polygon(points[0], points[2], points[3], false, 4));
     }
     if (type == 2){
-        polys.emplace_back(Polygon(points[0], points[1], points[3], points[2], false, 1));
-        polys.emplace_back(Polygon(points[4], points[5], points[7], points[6], false, 2));
-        polys.emplace_back(Polygon(points[2], points[3], points[7], points[6], false, 3));
-        polys.emplace_back(Polygon(points[0], points[1], points[5], points[4], false, 4));
-        polys.emplace_back(Polygon(points[1], points[3], points[7], points[5], false, 5));
-        polys.emplace_back(Polygon(points[0], points[2], points[6], points[4], false, 6));
+        polys.emplace_back(Polygon(points[0], points[2], points[1], false, 1));
+        polys.emplace_back(Polygon(points[2], points[3], points[1], false, 1));
+        polys.emplace_back(Polygon(points[0], points[1], points[4], false, 2));
+        polys.emplace_back(Polygon(points[4], points[1], points[5], false, 2));
+        polys.emplace_back(Polygon(points[5], points[1], points[3], false, 3));
+        polys.emplace_back(Polygon(points[5], points[3], points[7], false, 3));
+        polys.emplace_back(Polygon(points[6], points[4], points[5], false, 4));
+        polys.emplace_back(Polygon(points[6], points[5], points[7], false, 4));
+        polys.emplace_back(Polygon(points[7], points[2], points[6], false, 5));
+        polys.emplace_back(Polygon(points[7], points[3], points[2], false, 5));
+        polys.emplace_back(Polygon(points[6], points[0], points[4], false, 6));
+        polys.emplace_back(Polygon(points[6], points[2], points[0], false, 6));
     }
 }
 
