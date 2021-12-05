@@ -204,20 +204,3 @@ Matrix generate3DMoveMatrix(int x, int y, int z) {
     delete[] data;
     return res;
 }
-
-Matrix generateShadowMatrix(Matrix& lSource, float maxY){
-    Matrix res(4, 4);
-    for (int i = 0; i < 16; i++) res.contents[i / 4][i % 4] = 0;
-
-    res.contents[0][0] = maxY - lSource.getByRowCol(0, 1);
-    res.contents[1][0] = lSource.getByRowCol(0, 0);
-    res.contents[1][1] = maxY;
-    res.contents[1][2] = lSource.getByRowCol(0, 2);
-    res.contents[1][3] = 1;
-    res.contents[2][2] = maxY - lSource.getByRowCol(0, 1);
-    res.contents[3][0] = -maxY * lSource.getByRowCol(0, 0);
-    res.contents[3][1] = -maxY * lSource.getByRowCol(0, 1);
-    res.contents[3][2] = -maxY * lSource.getByRowCol(0, 2);
-    res.contents[3][3] = -lSource.getByRowCol(0, 1);
-    return res;
-}

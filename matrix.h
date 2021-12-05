@@ -21,7 +21,6 @@ public:
     bool operator==(const Matrix &rhs) const;
 
     bool operator!=(const Matrix &rhs) const;
-    friend Matrix generateShadowMatrix(Matrix& lSource, float maxY);
 };
 
 Matrix generate3DRotationMatrix(int angle, char axis);
