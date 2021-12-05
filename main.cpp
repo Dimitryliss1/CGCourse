@@ -168,7 +168,8 @@ void draw(std::vector<Figure>& figures, int x1, int y1, int x2, int y2){
         for (int j = 0; j < figure.getPolys()->size(); j++) {
             unsorted.emplace_back(figure.getPolys()[0][j]);
             unsorted[unsorted.size() - 1].convertToScreenCoords();
-            unsorted[unsorted.size() - 1].getEqn();
+            auto eqn = unsorted[unsorted.size() - 1].getEqn();
+            std::cout << eqn[0] << ' ' << eqn[1] << ' ' << eqn[2] << ' ' << eqn[3] << endl;
             if (unsorted[unsorted.size() - 1].ccw()) unsorted.pop_back();
         }
     }
@@ -220,27 +221,35 @@ void draw(std::vector<Figure>& figures, int x1, int y1, int x2, int y2){
                 }
             }
         }
-
         if (out.size() == unsorted.size()) {
             continue;
         }
-        if (win.size == MINWIN){
-            vector<Polygon>tmp;
+        if (win.size == MINWIN) {
+            vector<Polygon> tmp;
             tmp.reserve(overlap.size() + in.size() + intersect.size());
-            for(auto& i: overlap){
+            for (auto &i: overlap) {
                 tmp.emplace_back(i);
             }
-            for(auto& i: in){
+            for (auto &i: in) {
                 tmp.emplace_back(i);
             }
-            for(auto& i: intersect){
+            for (auto &i: intersect) {
                 tmp.emplace_back(i);
             }
-            sort(tmp.begin(), tmp.end(), comp);
-            putpixel(xStart, yStart, tmp[0].getColor());
+            float z = tmp[0].getZat(xStart, yStart);
+            int color = tmp[0].getColor();
+            for(auto& poly: tmp){
+                if (poly.isShadow1()) continue;
+                if (poly.getZat(xStart, yStart) < z) {
+                    color = poly.getColor();
+                    putpixel(xStart, yStart, color);
+                    z = poly.getZat(xStart, yStart);
+                }
+            }
+            putpixel(xStart, yStart, color);
+//            putpixel(xStart, yStart, tmp[0].getColor());
             continue;
         }
-
         if (!intersect.empty() || !in.empty()) {
             if (win.size > MINWIN) {
                 stack.emplace_back(xStart, yStart, (xStart + xEnd) / 2, (yStart + yEnd) / 2);
@@ -250,7 +259,6 @@ void draw(std::vector<Figure>& figures, int x1, int y1, int x2, int y2){
             }
             continue;
         }
-
         if (!overlap.empty()) {
             float zAt1 = overlap[0].getZat(xStart, yStart);
             float zAt2 = overlap[0].getZat(xEnd - 1, yStart);
@@ -266,22 +274,18 @@ void draw(std::vector<Figure>& figures, int x1, int y1, int x2, int y2){
                 if (zAt1 > poly.getZat(xStart, yStart)) {
                     zAt1 = poly.getZat(xStart, yStart);
                     color1 = poly.getColor();
-//                    break;
                 }
                 if (zAt2 > poly.getZat(xEnd - 1, yStart)) {
                     color2 = poly.getColor();
                     zAt2 = poly.getZat(xEnd - 1, yStart);
-                    //                    break;
                 }
                 if (zAt3 > poly.getZat(xEnd - 1, yEnd - 1)) {
                     color3 = poly.getColor();
                     zAt3 = poly.getZat(xEnd - 1, yEnd - 1);
-                    //                    break;
                 }
                 if (zAt4 > poly.getZat(xStart, yEnd - 1)) {
                     color4 = poly.getColor();
                     zAt4 = poly.getZat(xStart, yEnd - 1);
-                    //                    break;
                 }
             }
             set<int>colors = {color1, color2, color3, color4};
@@ -297,7 +301,7 @@ void draw(std::vector<Figure>& figures, int x1, int y1, int x2, int y2){
                 }
                 continue;
             }
-            fill((xStart + xEnd) / 2, (yStart + yEnd) / 2, color1, xStart, xEnd - 1, yStart, yEnd - 1);
+            fill((xStart + xEnd) / 2, (yStart + yEnd) / 2, color1, xStart, xEnd - 1, yStart, yEnd - 1); //Тут какие-то проблемы
             cnt++;
         }
     }

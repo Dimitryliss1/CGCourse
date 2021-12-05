@@ -2,23 +2,24 @@
 // Created by Павел Жуков on 27/11/2021.
 //
 
+#include <cmath>
 #include "Polygon.h"
 
 std::vector<Matrix> *Polygon::getPoints() {
     return &points;
 }
 
-Matrix Polygon::getEqn() {
+int * Polygon::getEqn() {
     std::vector<Matrix> ptr = Polygon::getPoints()[0];
-    float y1 = ptr[0].getByRowCol(0,1);
-    float y2 = ptr[1].getByRowCol(0,1);
-    float y3 = ptr[2].getByRowCol(0,1);
-    float x1 = ptr[0].getByRowCol(0,0);
-    float x2 = ptr[1].getByRowCol(0,0);
-    float x3 = ptr[2].getByRowCol(0,0);
-    float z1 = ptr[0].getByRowCol(0,2);
-    float z2 = ptr[1].getByRowCol(0,2);
-    float z3 = ptr[2].getByRowCol(0,2);
+    int y1 = ptr[0].getByRowCol(0,1);
+    int y2 = ptr[1].getByRowCol(0,1);
+    int y3 = ptr[2].getByRowCol(0,1);
+    int x1 = ptr[0].getByRowCol(0,0);
+    int x2 = ptr[1].getByRowCol(0,0);
+    int x3 = ptr[2].getByRowCol(0,0);
+    int z1 = ptr[0].getByRowCol(0,2);
+    int z2 = ptr[1].getByRowCol(0,2);
+    int z3 = ptr[2].getByRowCol(0,2);
 //    x1 += z1/2;
 //    y1 -= z1/2;
 //    x2 += z2/2;
@@ -26,26 +27,28 @@ Matrix Polygon::getEqn() {
 //    x3 += z3/2;
 //    y3 -= z3/2;
 
-    float eq[4] = {(y1 - y2) * (z1 + z2) + (y2 - y3) * (z2 + z3) + (y3 - y1) * (z3 + z1),
-                   (z1 - z2) * (x1 + x2) + (z2 - z3) * (x2 + x3) + (z2 - z3) * (x2 + x3),
-                   (x1 - x2) * (y1 + y2) + (x2 - x3) * (y2 + y3) + (x3 - x1) * (y3 + y1),
-                   0};
-//    float eq[4] = {(float) (y2 - y1) * (z3 - z1) - (z2 - z1) * (y3 - y1),
-//                   (float) (z2 - z1) * (x3 - x1) - (x2 - x1) * (z3 - z1),
-//                   (float) (x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1),
+//    float eq[4] = {(y1 - y2) * (z1 + z2) + (y2 - y3) * (z2 + z3) + (y3 - y1) * (z3 + z1),
+//                   (z1 - z2) * (x1 + x2) + (z2 - z3) * (x2 + x3) + (z2 - z3) * (x2 + x3),
+//                   (x1 - x2) * (y1 + y2) + (x2 - x3) * (y2 + y3) + (x3 - x1) * (y3 + y1),
 //                   0};
-    float tmp = 0;
+    int* eq = new int [4];
+    eq[0] = (y2 - y1) * (z3 - z1) - (z2 - z1) * (y3 - y1);
+    eq[1] = (z2 - z1) * (x3 - x1) - (x2 - x1) * (z3 - z1);
+    eq[2] = (x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1);
+    int tmp = 0;
+
     tmp += (-x1) * /*((y2 - y1) * (z3 - z1) - (z2 - z1) * (y3 - y1))*/ eq[0];
     tmp += (-y1) * /*((z2 - z1) * (x3 - x1) - (x2 - x1) * (z3 - z1))*/ eq[1];
     tmp += (-z1) * /*((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1))*/ eq[2];
     eq[3] = tmp;
-    equation.fill(eq, 4);
-    return equation;
+//    equation.fill(eq, 4);
+    equation = eq;
+    return eq;
 }
 
 float Polygon::getZat(float x, float y) {
-    Matrix eqn = this->getEqn();
-    return (x*eqn.getByRowCol(0,0) + y*eqn.getByRowCol(0,1) + eqn.getByRowCol(0,3))/*/(-equation.getByRowCol(0,2))*/;
+    int* eqn = this->getEqn();
+    return (x*eqn[0] + y*eqn[1] + eqn[3])/(-eqn[2]);
 }
 
 float Polygon::getMidZofClosestLine() {

@@ -13,7 +13,7 @@
 
 class Polygon {
     std::vector<Matrix> points;
-    Matrix equation;
+    int* equation;
     bool isShadow;
     int color;
 public:
@@ -22,7 +22,7 @@ public:
     Polygon(Matrix& pt1, Matrix& pt2, Matrix& pt3, bool isSh = false, int c = 0);
     int getColor();
     Polygon(Polygon const & from);
-    Matrix getEqn();
+    int * getEqn();
     float getZat(float x, float y);
     float getMidZofClosestLine();
     float getMidZ();
