@@ -20,17 +20,7 @@ int * Polygon::getEqn() {
     int z1 = ptr[0].getByRowCol(0,2);
     int z2 = ptr[1].getByRowCol(0,2);
     int z3 = ptr[2].getByRowCol(0,2);
-//    x1 += z1/2;
-//    y1 -= z1/2;
-//    x2 += z2/2;
-//    y2 -= z2/2;
-//    x3 += z3/2;
-//    y3 -= z3/2;
 
-//    float eq[4] = {(y1 - y2) * (z1 + z2) + (y2 - y3) * (z2 + z3) + (y3 - y1) * (z3 + z1),
-//                   (z1 - z2) * (x1 + x2) + (z2 - z3) * (x2 + x3) + (z2 - z3) * (x2 + x3),
-//                   (x1 - x2) * (y1 + y2) + (x2 - x3) * (y2 + y3) + (x3 - x1) * (y3 + y1),
-//                   0};
     delete [] equation;
     equation = new int [4];
     equation[0] = (y2 - y1) * (z3 - z1) - (z2 - z1) * (y3 - y1);
@@ -38,11 +28,10 @@ int * Polygon::getEqn() {
     equation[2] = (x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1);
     int tmp = 0;
 
-    tmp += (-x1) * /*((y2 - y1) * (z3 - z1) - (z2 - z1) * (y3 - y1))*/ equation[0];
-    tmp += (-y1) * /*((z2 - z1) * (x3 - x1) - (x2 - x1) * (z3 - z1))*/ equation[1];
-    tmp += (-z1) * /*((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1))*/ equation[2];
+    tmp += (-x1) * equation[0];
+    tmp += (-y1) * equation[1];
+    tmp += (-z1) * equation[2];
     equation[3] = tmp;
-//    equation.fill(eq, 4);
 
     return equation;
 }
@@ -59,10 +48,6 @@ float Polygon::getMidZofClosestLine() {
     float res1 = points[0].getByRowCol(0, 2) + points[1].getByRowCol(0, 2);
     float res2 = points[0].getByRowCol(0, 2) + points[2].getByRowCol(0, 2);
     float res3 = points[1].getByRowCol(0, 2) + points[2].getByRowCol(0, 2);
-//    float res1 = 0;
-//    for (auto & point : points) {
-//        res1 += point.getByRowCol(0, 2);
-//    }
     return std::min(std::min(res1/2, res2/2), res3/2);
 }
 
@@ -208,14 +193,6 @@ int Polygon::getColor() {
     return color;
 }
 
-void Polygon::setIsShadow(bool isShadow) {
-    Polygon::isShadow = isShadow;
-}
-
-void Polygon::setColor(int color) {
-    Polygon::color = color;
-}
-
 bool Polygon::operator==(const Polygon &rhs) const {
     return points == rhs.points &&
            equation == rhs.equation &&
@@ -245,10 +222,3 @@ bool Polygon::isShadow1() const {
     return isShadow;
 }
 
-float Polygon::getMidZ() {
-    float res = 0;
-    for (auto& i: points){
-        res += i.getByRowCol(0, 2);
-    }
-    return res;
-}

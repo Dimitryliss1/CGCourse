@@ -19,12 +19,9 @@ public:
     std::vector<Polygon>* getPolys();
     Matrix getMidPoint();
     ~Figure() = default;
-    Figure getShadow(Matrix& LightSource, int maxY);
     void rotate(int angle, Matrix& rotPoint, char axis);
     void scale(float size, Matrix scalePoint);
     void move(int x, int y, int z);
-    void convertToScreenCoords();
-    void assign(Figure& from);
 };
 
 

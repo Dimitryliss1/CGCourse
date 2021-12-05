@@ -65,27 +65,3 @@ void Figure::move(int x, int y, int z) {
     }
 }
 
-void Figure::convertToScreenCoords() {
-    for (auto& p: polys){
-        p.convertToScreenCoords();
-        p.getEqn();
-    }
-}
-
-Figure Figure::getShadow(Matrix &LightSource, int maxY) {
-    Figure res;
-    res.assign(*this);
-    for(auto & poly : res.polys){
-        poly = poly.getShadow(LightSource, maxY);
-        poly.setColor(15);
-        poly.setIsShadow(true);
-    }
-    return res;
-}
-
-void Figure::assign(Figure &from) {
-    polys.clear();
-    for(auto & poly : from.polys){
-        polys.emplace_back(Polygon(poly));
-    }
-}

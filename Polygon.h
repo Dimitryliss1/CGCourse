@@ -25,7 +25,6 @@ public:
     int * getEqn();
     float getZat(float x, float y);
     float getMidZofClosestLine();
-    float getMidZ();
     ~Polygon() = default;
     Matrix getCover(); // Матрица-оболочка -- [xmin, ymin, xmax, ymax]
     int getAmtOfPointsInsidePoly(std::vector<int>& xp, std::vector<int>& yp); // Подсчет количества точек окна внутри полигона
@@ -35,9 +34,7 @@ public:
     void move(int x, int y, int z);
     void convertToScreenCoords();
     std::vector<Matrix>* getPoints();
-    void setIsShadow(bool isShadow);
     bool isShadow1() const;
-    void setColor(int color);
     bool operator==(const Polygon &rhs) const;
     bool operator!=(const Polygon &rhs) const;
     bool ccw();
