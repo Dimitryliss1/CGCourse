@@ -20,14 +20,13 @@ public:
     Polygon() = default;
     Polygon(Matrix& pt1, Matrix& pt2, Matrix& pt3, Matrix& pt4, bool isSh = false, int c = 0);
     Polygon(Matrix& pt1, Matrix& pt2, Matrix& pt3, bool isSh = false, int c = 0);
-    int getColor();
     Polygon(Polygon const & from);
+    ~Polygon() = default;
+    int getColor();
     int * getEqn();
     float getZat(float x, float y);
     float getMidZofClosestLine();
-    ~Polygon() = default;
-    Matrix getCover(); // Матрица-оболочка -- [xmin, ymin, xmax, ymax]
-    int getAmtOfPointsInsidePoly(std::vector<int>& xp, std::vector<int>& yp); // Подсчет количества точек окна внутри полигона
+    int getAmtOfPointsInsidePoly(std::vector<int> &xp, std::vector<int> &yp, bool earlyStop = false); // Подсчет количества точек окна внутри полигона
     Polygon getShadow(Matrix& LightSource, float maxY);
     void rotate(int angle, Matrix& rotPoint, char axis);
     void scale(float size, Matrix scalePoint);

@@ -51,32 +51,8 @@ float Polygon::getMidZofClosestLine() {
     return std::min(std::min(res1/2, res2/2), res3/2);
 }
 
-Matrix Polygon::getCover() {
-    float xmin = 1000000000.0, xmax = -1000000000.0;
-    float ymin = 1000000000.0, ymax = -1000000000.0;
-    for (auto & point : points) {
-        if (point.getByRowCol(0,0) < xmin) {
-            xmin = point.getByRowCol(0,0);
-        }
-        if (point.getByRowCol(0,0) > xmax){
-            xmax = point.getByRowCol(0,0);
-        }
-        if (point.getByRowCol(0,1) < ymin) {
-            ymin = point.getByRowCol(0,1);
-        }
-        if (point.getByRowCol(0,1) > ymax){
-            ymax = point.getByRowCol(0,1);
-        }
-    }
-    Matrix res (1, 4);
-    float data[4] = {xmin, ymin, xmax, ymax};
-    res.fill(data, 4);
-    return res;
-}
-
 Polygon Polygon::getShadow(Matrix &LightSource, float maxY) {
     Polygon res(*this);
-    Matrix tmp = generateShadowMatrix(LightSource, maxY);
     float xl = LightSource.getByRowCol(0, 0);
     float yl = LightSource.getByRowCol(0, 1);
     float zl = LightSource.getByRowCol(0, 2);
@@ -92,7 +68,6 @@ Polygon Polygon::getShadow(Matrix &LightSource, float maxY) {
         y = maxY;
         float mas[4] = {x, y, z, 1};
         i.fill(mas, 4);
-//        i = i * tmp;
     }
     res.isShadow = true;
     res.color = 15;
@@ -168,7 +143,7 @@ Polygon::Polygon(Polygon const &from) {
     equation = nullptr;
 }
 
-int Polygon::getAmtOfPointsInsidePoly(std::vector<int>& xp, std::vector<int>& yp) {
+int Polygon::getAmtOfPointsInsidePoly(std::vector<int> &xp, std::vector<int> &yp, bool earlyStop) {
     getEqn();
     int res = 0;
     for (auto& x: xp) {
@@ -183,6 +158,7 @@ int Polygon::getAmtOfPointsInsidePoly(std::vector<int>& xp, std::vector<int>& yp
                     c = !c;
                 }
             }
+            if (c && earlyStop) return 1;
             res += c;
         }
     }
@@ -215,7 +191,7 @@ bool Polygon::ccw() {
     float d = cy - ay;
 
     float signed_area = a*d - b*c;
-    return signed_area < 0;
+    return signed_area > 0;
 }
 
 bool Polygon::isShadow1() const {
