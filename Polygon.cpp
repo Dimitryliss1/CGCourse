@@ -31,19 +31,20 @@ int * Polygon::getEqn() {
 //                   (z1 - z2) * (x1 + x2) + (z2 - z3) * (x2 + x3) + (z2 - z3) * (x2 + x3),
 //                   (x1 - x2) * (y1 + y2) + (x2 - x3) * (y2 + y3) + (x3 - x1) * (y3 + y1),
 //                   0};
-    int* eq = new int [4];
-    eq[0] = (y2 - y1) * (z3 - z1) - (z2 - z1) * (y3 - y1);
-    eq[1] = (z2 - z1) * (x3 - x1) - (x2 - x1) * (z3 - z1);
-    eq[2] = (x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1);
+    delete [] equation;
+    equation = new int [4];
+    equation[0] = (y2 - y1) * (z3 - z1) - (z2 - z1) * (y3 - y1);
+    equation[1] = (z2 - z1) * (x3 - x1) - (x2 - x1) * (z3 - z1);
+    equation[2] = (x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1);
     int tmp = 0;
 
-    tmp += (-x1) * /*((y2 - y1) * (z3 - z1) - (z2 - z1) * (y3 - y1))*/ eq[0];
-    tmp += (-y1) * /*((z2 - z1) * (x3 - x1) - (x2 - x1) * (z3 - z1))*/ eq[1];
-    tmp += (-z1) * /*((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1))*/ eq[2];
-    eq[3] = tmp;
+    tmp += (-x1) * /*((y2 - y1) * (z3 - z1) - (z2 - z1) * (y3 - y1))*/ equation[0];
+    tmp += (-y1) * /*((z2 - z1) * (x3 - x1) - (x2 - x1) * (z3 - z1))*/ equation[1];
+    tmp += (-z1) * /*((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1))*/ equation[2];
+    equation[3] = tmp;
 //    equation.fill(eq, 4);
-    equation = eq;
-    return eq;
+
+    return equation;
 }
 
 float Polygon::getZat(float x, float y) {
@@ -160,6 +161,7 @@ Polygon::Polygon(Matrix &pt1, Matrix &pt2, Matrix &pt3, bool isSh, int c) {
     points.emplace_back(pt1);
     points.emplace_back(pt2);
     points.emplace_back(pt3);
+    equation = nullptr;
 }
 
 Polygon::Polygon(Matrix &pt1, Matrix &pt2, Matrix &pt3, Matrix &pt4, bool isSh, int c) {
@@ -169,6 +171,7 @@ Polygon::Polygon(Matrix &pt1, Matrix &pt2, Matrix &pt3, Matrix &pt4, bool isSh, 
     points.emplace_back(pt2);
     points.emplace_back(pt3);
     points.emplace_back(pt4);
+    equation = nullptr;
 }
 
 Polygon::Polygon(Polygon const &from) {
@@ -177,7 +180,7 @@ Polygon::Polygon(Polygon const &from) {
     for(const auto & point : from.points){
         points.emplace_back(point);
     }
-    equation = this->getEqn();
+    equation = nullptr;
 }
 
 int Polygon::getAmtOfPointsInsidePoly(std::vector<int>& xp, std::vector<int>& yp) {
