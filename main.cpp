@@ -18,6 +18,7 @@ int main() {
     initwindow(600, 600);
     sdlbgiauto();
     std::vector<Figure> figs = init();
+    draw(figs, 0, 0, getmaxx() + 1, getmaxy() + 1);
     int curFig = 0;
     while(true) {
         char c = getch();
@@ -99,13 +100,13 @@ int main() {
                     curFig %= figs.size();
                     break;
                 case 'z': {
-                    figs[curFig].scale(0.95, rotPoint);
+                    figs[curFig].scale(0.5, rotPoint);
                     setbkcolor(0);
                     draw(figs, 0, 0, getmaxx() + 1, getmaxy() + 1);
                     break;
                 }
                 case 'c': {
-                    figs[curFig].scale(1.05, rotPoint);
+                    figs[curFig].scale(2, rotPoint);
                     setbkcolor(0);
                     draw(figs, 0, 0, getmaxx() + 1, getmaxy() + 1);
                     break;
@@ -182,8 +183,8 @@ void draw(std::vector<Figure>& figures, int x1, int y1, int x2, int y2){
         vector<Polygon> out;
         vector<Polygon> intersect;
         vector<Polygon> overlap;
-        vector<int> xs = {xStart, xEnd - 1};
-        vector<int> ys = {yStart, yEnd - 1};
+        vector<int> xs = {xStart, xEnd};
+        vector<int> ys = {yStart, yEnd};
         vector<int> xAll;
         for (int i = xStart; i < xEnd; i++){
             xAll.emplace_back(i);
@@ -239,7 +240,7 @@ void draw(std::vector<Figure>& figures, int x1, int y1, int x2, int y2){
                 if (poly.isShadow1()) continue;
                 if (poly.getZat(xStart, yStart) < z) {
                     color = poly.getColor();
-                    fill((xStart + xEnd) / 2, (yStart + yEnd) / 2, color, xStart, xEnd - 1, yStart, yEnd - 1);
+//                    fill((xStart + xEnd) / 2, (yStart + yEnd) / 2, color, xStart, xEnd - 1, yStart, yEnd - 1);
                     z = poly.getZat(xStart, yStart);
                 }
             }

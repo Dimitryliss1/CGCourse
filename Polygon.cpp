@@ -2,7 +2,6 @@
 // Created by Павел Жуков on 27/11/2021.
 //
 
-#include <cmath>
 #include "Polygon.h"
 
 std::vector<Matrix> *Polygon::getPoints() {

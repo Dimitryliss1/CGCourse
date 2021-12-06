@@ -17,9 +17,7 @@ public:
     friend Matrix operator * (const Matrix& Matrix1, const Matrix& Matrix2);
     friend Matrix operator + (const Matrix& Matrix1, const Matrix& Matrix2);
     friend Matrix operator / (const Matrix& Matrix1, float num);
-
     bool operator==(const Matrix &rhs) const;
-
     bool operator!=(const Matrix &rhs) const;
 };
 
